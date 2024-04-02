@@ -1,93 +1,125 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
+#define X first
+#define Y second
+/*
+보드 순회
+bfs 돌면서 cnt 4개 이상이면 지울 수 있는거
+아니면 못 지움
+*/
+char field[12][6];
+int isused[12][6];
+int dx[4]={1,0,-1,0};
+int dy[4]={0,1,0,-1};
+int ans;
+bool isposs;
 
-int n, m; // 보드의 세로, 가로 크기
-vector<vector<int>> board; // 보드의 상태를 저장하는 2차원 벡터
-int ans; // 정답 저장
-vector<pair<int, int>> cctv; // CCTV의 위치를 저장하는 벡터
-vector<bool> isused; // CCTV 사용 여부를 저장하는 벡터
+void change();
 
-int dx[4] = {1, 0, -1, 0}; // 이동할 방향에 따른 세로 방향의 변화량
-int dy[4] = {0, 1, 0, -1}; // 이동할 방향에 따른 가로 방향의 변화량
 
-// CCTV가 보는 방향을 확인하여 해당 방향으로 직진하며 보이는 영역을 표시하는 함수
-void check(int a, int b, int drt, vector<vector<int>>& temp) {
-    // 보드의 범위를 벗어나거나 벽을 만날 때까지 반복
-    while (1) {
-        if (a < 0 || a >= n || b < 0 || b >= m || temp[a][b] == 6) return; // 범위를 벗어나거나 벽을 만나면 종료
-        if (temp[a][b] == 0) temp[a][b] = 7; // 빈 공간이면 CCTV가 본 영역으로 표시
-        a += dx[drt]; // 다음 위치로 이동
-        b += dy[drt];
+// 뿌요 확인 bff 순회, 4개 이상이면 뿌요를 지운다. 이하면 방문노드 초기화
+void bfs(pair<int, int> sta, char target){
+    int cnt=0;
+    queue<pair<int, int>> q;
+    q.push(sta);
+    isused[sta.X][sta.Y]++;
+    cnt++;
+    while (!q.empty())
+    {
+        auto cur=q.front(); q.pop();
+        for (int dir = 0; dir < 4; dir++)
+        {
+            int nx=cur.X+dx[dir];
+            int ny=cur.Y+dy[dir];
+            if(nx<0 || nx>=12 || ny<0 || ny>6) continue;
+            if(isused[nx][ny] || field[nx][ny]!=target) continue;
+            q.push({nx,ny});
+            isused[nx][ny]++;
+            cnt++;
+        }
+        
     }
+    //4개 이상 뿌요 지우기
+    if(cnt>=4){
+        isposs=true;
+        // change();
+    }
+    // 방문 노드 초기화
+    fill(&isused[0][0],&isused[0][0]+72,0);
+
 }
 
-// CCTV의 모든 경우를 탐색하는 재귀 함수
-void recur(int cur, vector<vector<int>> t) {
-    // 모든 CCTV에 대한 처리를 완료한 경우
-    if (cur == cctv.size()) {
-        int cnt = 0;
-        // 남은 빈 공간의 수를 계산
-        for (const auto& row : t) {
-            cnt += count(row.begin(), row.end(), 0);
-        }
-        // 최솟값 업데이트
-        ans = min(ans, cnt);
-        return;
-    }
 
-    int x = cctv[cur].first; // 현재 CCTV의 세로 위치
-    int y = cctv[cur].second; // 현재 CCTV의 가로 위치
-    for (int i = 0; i < 4; i++) {
-        vector<vector<int>> temp = t; // 보드의 상태를 복사하여 사용
-        switch (board[x][y]) {
-            // CCTV 종류에 따라 해당하는 방향을 표시
-            case 1:
-                check(x, y, i, temp);
-                break;
-            case 2:
-                check(x, y, i, temp);
-                check(x, y, (i + 2) % 4, temp);
-                break;
-            case 3:
-                check(x, y, i, temp);
-                check(x, y, (i + 1) % 4, temp);
-                break;
-            case 4:
-                for (int j = 0; j < 2; j++) {
-                    check(x, y, (i + j) % 4, temp);
-                }
-                check(x, y, (i + 2) % 4, temp);
-                break;
-            case 5:
-                for (int j = 0; j < 4; j++) {
-                    check(x, y, j, temp);
-                }
-                break;
-        }
-        // 다음 CCTV로 넘어감
-        recur(cur + 1, temp);
-    }
-}
-
-int main() {
-    ios_base::sync_with_stdio(false); // C++ I/O 스트림과 C 표준 스트림 동기화 비활성화
-    cin.tie(0); // cin과 cout의 묶음을 해제하여 실행 속도 향상
-
-    cin >> n >> m; // 보드의 세로, 가로 크기 입력
-    board.resize(n, vector<int>(m, 0)); // 보드 초기화
-
-    // 보드의 상태 입력
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            cin >> board[i][j];
-            // CCTV 위치 저장
-            if(board[i][j]==0) ans++;
-            if (board[i][j] > 0 && board[i][j] < 6) {
-                cctv.push_back({i, j});
+// 지운 뿌요를 .으로 바꾼다.
+void change(){
+    for (int i = 0; i < 12; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            if(isused[i][j]){
+                field[i][j]='.';
             }
         }
     }
+}
 
-    recur(0, board); // 재귀 함수 호출하여 모든 경우 탐색
+// 보드 순회, 뿌요를 아래로 내린다.
+void down(){
+    for (int i = 0; i < 6; i++)
+    {
+        for (int j = 11; j >= 0; j--)
+        {
+            if(field[j][i]=='.'){
+                for (int k = j-1; k >= 0; k--)
+                {
+                    if(field[k][i]!='.'){
+                        swap(field[j][i],field[k][i]);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+int main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+
+    //보드 입력
+    for (int i = 0; i < 12; i++)
+    {
+        for (int j = 0; j < 6; j++)
+        {
+            cin>>field[i][j];
+        }
+    }
+
+    //반복 시작
+    while (1)
+    {
+        //부술 뿌요가 있는지 확인
+        bool flag = 0;
+
+        for (int i = 0; i < 12; i++)
+        {
+            for (int j = 0; j < 6; j++)
+            {   //뿌요가 있는지 확인
+                if(field[i][j]!='.')
+                    bfs({i,j},field[i][j]);
+            }
+        }
+        
+        if(isposs){
+            change();
+            down();
+            ans++;
+            isposs=false;
+            flag=1;
+        }
+        if(!flag) break;
+    }
+
     cout<<ans;
 }
