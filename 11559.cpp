@@ -50,16 +50,16 @@ void bfs(pair<int, int> sta, char target){
     if(cnt>=4){
         isposs=true;
         change();
-        cout<<"----------------\n";
-        for (int i = 0; i < 12; i++)
-        {
-            for (int j = 0; j < 6; j++)
-            {
-                cout<<field[i][j];
-            }
-            cout<<'\n';
-        }
-        cout<<"----------------\n";
+        // cout<<"----------------\n";
+        // for (int i = 0; i < 12; i++)
+        // {
+        //     for (int j = 0; j < 6; j++)
+        //     {
+        //         cout<<field[i][j];
+        //     }
+        //     cout<<'\n';
+        // }
+        // cout<<"----------------\n";
     }
    
 }
@@ -80,20 +80,23 @@ void change(){
 
 // 보드 순회, 뿌요를 아래로 내린다.
 void down(){
+    queue<char> tmp;
     for (int i = 0; i < 6; i++)
     {
-        for (int j = 11; j >= 0; j--)
+        for (int j = 11; j>=0; j--)
+            if(field[j][i]!='.')
+                {tmp.push(field[j][i]); field[j][i]='.';}
+        for (int j =11; j>=0; j--)
         {
-            if(field[j][i]=='.'){
-                for (int k = j-1; k >= 0; k--)
-                {
-                    if(field[k][i]!='.'){
-                        swap(field[j][i],field[k][i]);
-                    }
-                }
+            if(!tmp.empty()){
+                field[j][i]=tmp.front();
+                tmp.pop();
             }
         }
+        
+        
     }
+    
 }
 
 
@@ -130,16 +133,16 @@ int main(){
             ans++;
             isposs=false;
             flag=1;
-            cout<<"뿌요!!"<<"----------------\n";
-        for (int i = 0; i < 12; i++)
-        {
-            for (int j = 0; j < 6; j++)
-            {
-                cout<<field[i][j];
-            }
-            cout<<'\n';
-        }
-        cout<<"----------------\n";
+        //     cout<<"뿌요!!"<<"----------------\n";
+        // for (int i = 0; i < 12; i++)
+        // {
+        //     for (int j = 0; j < 6; j++)
+        //     {
+        //         cout<<field[i][j];
+        //     }
+        //     cout<<'\n';
+        // }
+        // cout<<"----------------\n";
         }
         if(!flag) break;
     }
