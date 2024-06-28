@@ -1,125 +1,62 @@
-#include<bits/stdc++.h>
+// Authored by : jihwan0123
+// Co-authored by : BaaaaaaaaaaarkingDog
+// http://boj.kr/dfcfa653b8494b3082959f248edfb200
+#include <bits/stdc++.h>
 using namespace std;
-#define X first
-#define Y second
+
+string board[4];
+
+// x : 번호, dir : 방향, 1번의 회전을 처리하는 함수
+void go(int x, int dir) {
+  int dirs[4] = {};
+  dirs[x] = dir;
+  // 왼쪽으로 회전을 전파
+  int idx = x;
+  while (idx > 0 && board[idx][6] != board[idx-1][2]){
+    dirs[idx-1] = -dirs[idx];
+    idx--;
+  }
+  
+  // 오른쪽으로 회전을 전파
+  idx = x;
+  while (idx < 3 && board[idx][2] != board[idx+1][6]){
+    dirs[idx+1] = -dirs[idx];
+    idx++;
+  }
+
+  for(int i = 0; i < 4; i++) {
+    if(dirs[i] == -1)
+      rotate(board[i].begin(), board[i].begin()+1, board[i].end());    
+    else if(dirs[i] == 1)
+      rotate(board[i].begin(), board[i].begin()+7, board[i].end());
+  }
+  cout<<dirs[0]<<dirs[1]<<dirs[2]<<dirs[3]<<'\n';
+}
+
+int main(void) {
+  ios::sync_with_stdio(0);
+  cin.tie(0);
+  
+  for (int i = 0; i < 4; i++) cin >> board[i];
+  int k;
+  cin >> k;
+  while (k--) {
+    int x, dir;
+    cin >> x >> dir;
+    go(x - 1, dir);
+  }
+  int ans = 0;
+  for (int i = 0; i < 4; i++)
+    if (board[i][0] == '1') ans += (1 << i);
+
+ for (int i = 0; i < 4; i++)
+    {for (int j = 0; j < 8; j++)
+        cout << board[i][j];
+        cout << '\n';}
+cout<<'\n';
+  cout << ans;
+}
+
 /*
-보드 순회
-bfs 돌면서 cnt 4개 이상이면 지울 수 있는거
-아니면 못 지움
+STL에 rotate 함수가 있어서 회전을 다소 편하게 처리할 수 있다.
 */
-char field[12][6];
-int isused[12][6];
-int dx[4]={1,0,-1,0};
-int dy[4]={0,1,0,-1};
-int ans;
-bool isposs;
-
-void change();
-
-
-// 뿌요 확인 bff 순회, 4개 이상이면 뿌요를 지운다. 이하면 방문노드 초기화
-void bfs(pair<int, int> sta, char target){
-    int cnt=0;
-    queue<pair<int, int>> q;
-    q.push(sta);
-    isused[sta.X][sta.Y]++;
-    cnt++;
-    while (!q.empty())
-    {
-        auto cur=q.front(); q.pop();
-        for (int dir = 0; dir < 4; dir++)
-        {
-            int nx=cur.X+dx[dir];
-            int ny=cur.Y+dy[dir];
-            if(nx<0 || nx>=12 || ny<0 || ny>6) continue;
-            if(isused[nx][ny] || field[nx][ny]!=target) continue;
-            q.push({nx,ny});
-            isused[nx][ny]++;
-            cnt++;
-        }
-        
-    }
-    //4개 이상 뿌요 지우기
-    if(cnt>=4){
-        isposs=true;
-        // change();
-    }
-    // 방문 노드 초기화
-    fill(&isused[0][0],&isused[0][0]+72,0);
-
-}
-
-
-// 지운 뿌요를 .으로 바꾼다.
-void change(){
-    for (int i = 0; i < 12; i++)
-    {
-        for (int j = 0; j < 6; j++)
-        {
-            if(isused[i][j]){
-                field[i][j]='.';
-            }
-        }
-    }
-}
-
-// 보드 순회, 뿌요를 아래로 내린다.
-void down(){
-    for (int i = 0; i < 6; i++)
-    {
-        for (int j = 11; j >= 0; j--)
-        {
-            if(field[j][i]=='.'){
-                for (int k = j-1; k >= 0; k--)
-                {
-                    if(field[k][i]!='.'){
-                        swap(field[j][i],field[k][i]);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-}
-
-
-int main(){
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-
-    //보드 입력
-    for (int i = 0; i < 12; i++)
-    {
-        for (int j = 0; j < 6; j++)
-        {
-            cin>>field[i][j];
-        }
-    }
-
-    //반복 시작
-    while (1)
-    {
-        //부술 뿌요가 있는지 확인
-        bool flag = 0;
-
-        for (int i = 0; i < 12; i++)
-        {
-            for (int j = 0; j < 6; j++)
-            {   //뿌요가 있는지 확인
-                if(field[i][j]!='.')
-                    bfs({i,j},field[i][j]);
-            }
-        }
-        
-        if(isposs){
-            change();
-            down();
-            ans++;
-            isposs=false;
-            flag=1;
-        }
-        if(!flag) break;
-    }
-
-    cout<<ans;
-}

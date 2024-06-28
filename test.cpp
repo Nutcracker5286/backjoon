@@ -1,58 +1,51 @@
-#include <bits/stdc++.h>
+#include<bits/stdc++.h>
 using namespace std;
 
-#define X first
-#define Y second
+// n극 0, s극 1
+int cog[4][8];
 
-int board[51][51];
-bool vis[51][51];
-int dx[4] = { 1,0,-1,0 };
-int dy[4] = { 0,1,0,-1 };
-int m, n, k;
-queue <pair<int, int >> q;
+//dir=1 시계 -1 반시계
+int k, numb, dir; 
 
-void bfs(int x, int y) {
-  vis[x][y] = true;
-  q.push({ x,y });
-  while (!q.empty()) {
-    auto cur = q.front(); q.pop();
-    for (int dir = 0; dir < 4; dir++) {
-      int nx = cur.X + dx[dir];
-      int ny = cur.Y + dy[dir];
-      if (nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
-      if (vis[nx][ny] || board[nx][ny] != 1) continue;
-      vis[nx][ny] = true;
-      q.push({ nx,ny });
-    }
-  }
-}
-
-int main(void) {
-  ios::sync_with_stdio(0);
-  cin.tie(0);
-  int t;
-  cin >> t;
-  while (t--) {
-    cin >> m >> n >> k;
-    int x, y;
-    for (int i = 0; i < k; i++) {
-      cin >> x >> y;
-      board[y][x] = 1;
-    }
-    int res = 0; //지렁이 개수
-    for (int i = 0; i < n; i++) {
-      for (int j = 0; j < m; j++) {
-        if (board[i][j] == 1 && !vis[i][j]) {
-          bfs(i, j);
-          res++;
+/*
+1번은 2
+2번은 6,2
+3번은 6,2
+4번은  ,6
+*/
+void rotate(int cog_num, int cog_dir){
+    if(cog_dir==1){
+        // 시계방향 0 1, 1 2, 2 3 ...
+        int tmp[8]={};
+        for (int i = 0; i < 8; i++)
+            tmp[i]=cog[cog_num][i];
+        for (int i = 0; i < 8; i++)
+        {
+            int idx=(i+1)%8;
+            cog[cog_num][idx]=tmp[i];
         }
-      }
     }
-    cout << res << "\n";
-    for(int i = 0; i < n; i++){
-      fill(board[i], board[i]+m, 0);
-      fill(vis[i], vis[i]+m, false);
+    else{
+        // 반시계방향 0 7, 1 0, 2 1 ...
+        int tmp[8]={};
+        for (int i = 0; i < 8; i++)
+            tmp[i]=cog[cog_num][i];
+        for (int i = 0; i < 8; i++)
+        {
+            int idx=(i+7)%8;
+            cog[cog_num][idx]=tmp[i];
+        }
+
     }
-  }
-  return 0;
 }
+
+
+int main(){
+    unsigned int var1 = 10;
+    unsigned int var2 = 20;
+    unsigned int var3 = 30;
+    unsigned int var4;
+
+    var4=var1--(var2+var3);
+    
+ }

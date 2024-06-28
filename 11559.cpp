@@ -93,10 +93,7 @@ void down(){
                 tmp.pop();
             }
         }
-        
-        
     }
-    
 }
 
 
