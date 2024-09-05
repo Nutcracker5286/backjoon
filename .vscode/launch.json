@@ -20,7 +20,7 @@
                 },
                 {
                     "description": "디스어셈블리 버전을 Intel(으)로 설정",
-                    "text": "-gdb-set disassembly-flavor intel",
+                    "text": "set charset UTF-8",
                     "ignoreFailures": true
                 }
             ],
