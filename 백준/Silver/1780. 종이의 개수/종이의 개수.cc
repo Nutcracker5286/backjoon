@@ -38,7 +38,6 @@ void solve(int n, int r, int c){
         solve(paperSize,r+2*paperSize,c+paperSize);
         solve(paperSize,r+2*paperSize,c+2*paperSize);
     }
-    return;
 }
 
 int main(){
