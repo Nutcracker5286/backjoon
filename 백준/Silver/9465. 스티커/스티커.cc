@@ -43,14 +43,7 @@ int main(){
      d[2][i]=max({d[1][i-2],d[2][i-2],d[1][i-1]})+a[2][i];
     }
 
-    int ans=0;
-    for(int i=1; i<=2; i++){
-      for(int j=1; j<=n; j++){
-        ans=max(ans,d[i][j]);
-      }
-    }
-
-    cout<<ans<<'\n';
+    cout<<max(d[1][n],d[2][n])<<'\n';
   }
   
 }
