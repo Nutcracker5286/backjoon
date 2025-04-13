@@ -1,0 +1,3 @@
+-- 코드를 입력하세요
+SELECT round(avg(c.DAILY_FEE)) FROM CAR_RENTAL_COMPANY_CAR c
+WHERE C.CAR_TYPE = 'SUV'
