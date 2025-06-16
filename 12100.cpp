@@ -43,25 +43,6 @@ void tiltld(int dir){
    }
 }
 
-void solve(int t){
-    if(t==5){
-        for (int i = 0; i < n; i++)
-        {
-            for (int j = 0; j < n; j++)
-            {
-                ans=max(board[i][j],ans);
-            }
-            
-        }
-        return;
-    }
-    for (int dir = 0; dir < 4; dir++)
-    {
-        tiltld(dir);
-        solve(t+1);
-    }
-}
-
 
 int main(){
     ios_base::sync_with_stdio(0);

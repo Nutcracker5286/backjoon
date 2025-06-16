@@ -13,12 +13,12 @@ void solve(int k, int prev){
         cout<<'\n';
         return ;
     }
-    for(int i=0; i<n; i++){
-        if(isUsed[i] || num[i]<prev)
-            continue;
-        isUsed[i]=1;
+    for(int i=prev; i<n; i++){
+        // if( num[i]<prev)
+        //     continue;
+        // isUsed[i]=1;
         arr[k]=num[i];
-        solve(k+1,num[i]);
+        solve(k+1,i+1);
         isUsed[i]=0;
     }
 

@@ -1,98 +1,106 @@
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
 using namespace std;
 
-int n,m,k;
+int n,m,k,r,c,px,py;
+int ans;
 int board[50][50];
 int sticker[15][15];
-int r, c;
 
-/*
-90도 회전 시 변화는 좌표 작성을 통해 추론 가능
-a가 기존 배열, b가 회전 후 배열
-b[x][y] = a[r-1-y][x]이다
-*/
-void rotate(){
-    int temp[15][15];
 
-    for (int i = 0; i < r; i++)
-        for (int j = 0; j < c; j++)
-            temp[i][j]=sticker[i][j];
-     for (int i = 0; i < c; i++)
-        for (int j = 0; j < r; j++)
-            sticker[i][j]=temp[r-1-j][i];
-    int tmp=c;
-    c=r;
-    r=tmp;
-}
-
-bool canstic(int x, int y){
-    for (int i = 0; i < r; i++)
-    {
-        for (int j = 0; j < c; j++)
-        {
-            if(board[x+i][y+j] == 1 && sticker[i][j]==1)
-                return false;
-        }
-    }
-    
-    for (int i = 0; i < r; i++)
-    {
-        for (int j = 0; j < c; j++)
-        {
-            if(sticker[i][j]==1)
-                board[x+i][y+j]=1;
-        }
-    }
-    return true;
-    
-}
-
-int main(){
-    ios_base::sync_with_stdio(0);
-    cin.tie(0);
-
-    cin>>n>>m>>k;
-
-    while (k--)
-    {
-        cin>>r>>c;
-        // 스티커 붙이고
-        for (int i = 0; i < r; i++)
-        {
-            for (int j = 0; j < c; j++)
-            {
-                cin>>sticker[i][j];
-            }  
-        }
-        
-        for (int rot = 0; rot < 4; rot++)
-        {
-            bool escape=false;
-            for (int i = 0; i <= n-r; i++)
-            {
-                if(escape) break;
-                for (int j = 0; j <= m-c; j++)
-                {
-                    if(canstic(i,j)){
-                        escape=true;
+// 각 방향마다 호출 되어 스티커 붙일 수 있는 지 확인
+bool isPs(){
+    for(int i=0; i<n; i++){
+        for(int j=0; j<m; j++){
+            if(i+r>n || j+c>m)  continue;
+            bool passStage=false;
+            for(int row=0; row < r; row++){
+                if(passStage) break;
+                for(int col=0; col<c; col++){
+                    if(board[i+row][j+col]==1 && sticker[row][col]==1){
+                        passStage=true;
                         break;
                     }
                 }
             }
-            if(escape) break;
-            rotate();
-        }
-        
-    }
-    int ans=0;
+            if(passStage) continue;
+            px=i; py = j;
 
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < m; j++)
-        {
-            if(board[i][j]==1) ans++;
+            return 1;
         }
-        
     }
+    return 0;
+}
+
+
+// 90도 회전
+void rotateSt(){
+    int tmp[15][15]={0};
+    for(int i=0; i<c; i++){
+        queue<int> Q;
+
+        for(int j=r-1; j>=0; j--){
+            Q.push(sticker[j][i]);
+        }
+
+        for(int j=0; j<r; j++){
+            if(Q.empty()) break;
+            tmp[i][j]=Q.front(); Q.pop();
+        }
+    }
+    swap(r,c);
+
+    for(int i=0; i<r; i++){
+        for(int j=0; j<c; j++){
+            sticker[i][j]=tmp[i][j];
+        }
+    }
+}
+
+// 스티커 붙이기
+void paste(int x, int y){
+    for(int i=x; i<x+r; i++){
+        for(int j=y; j<y+c; j++){
+            if(board[i][j]==1) continue;
+            board[i][j]=sticker[i-x][j-y];
+        }
+    }
+}
+
+int main(){
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+
+    cin>>n>>m>>k;
+    int a=k;
+    while(a--){
+        for(int i=0; i<15; i++)
+            fill(sticker[i],sticker[i]+15,0);
+
+        cin>>r>>c;
+        
+        
+        for(int i=0; i<r; i++)
+            for(int j=0; j<c; j++)
+                cin>>sticker[i][j];
+        
+        for(int d=0; d<4; d++){
+            if(!isPs()) {
+                rotateSt();
+                
+                continue;
+            }
+            paste(px,py);
+
+            break;
+        }
+    }
+
+
+    for(int i=0; i<n; i++)
+        for(int j=0; j<m; j++)
+            ans+=board[i][j]!=0;
+  
     cout<<ans;
 }
+
+ 
