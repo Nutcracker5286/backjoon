@@ -1,75 +1,84 @@
+
 #include <bits/stdc++.h>
 using namespace std;
+
 /*
-주사위 굴리기
-맵의 숫자에 따라 주사위의 상태가 변한다.
-주사위 이동시마다 상단 값 출력
+  2
+4 1 3
+  5
+  6
+
+명령에 따라 굴리고 지도칸이 0이면 주사위 -> 지도
+아니면 지도 -> 주사위 ,칸은 0으로
 */
-int n,m,x,y,k;
-int dx[4]={0,0,-1,1};
-int dy[4]={1,-1,0,0};
+int dice[7];
+int brd[25][25];
+int dx[4] = {0, 0, -1, 1};
+int dy[4] = {1, -1, 0, 0}; // 동서북남
+int n, m, k, x, y;
 
-int map_[21][21];
-int dice[4][3];
+int idx[5][4] = {
+    {},
+    {4, 1, 3, 6}, // 동
+    {4, 6, 3, 1}, // 서
+    {2, 6, 5, 1}, // 북
+    {2, 1, 5, 6}  // 남
+};
 
-void roll(int dir, int curX, int curY){
-    int temp[4][3]={};
-    for(int i=0;i<4;i++)
-        for(int j=0;j<3;j++)
-            temp[i][j]=dice[i][j];
-    dir--;
-    int nx=curX+dx[dir];
-    int ny=curY+dy[dir];
-    if(nx<0 || nx>=n || ny<0 || ny>=m) return;
-    x=nx; y=ny;
-    //주사위 굴리기
-    if(dir==0){//동
-        dice[1][0]=temp[3][1];
-        dice[1][1]=temp[1][0];
-        dice[1][2]=temp[1][1];
-        dice[3][1]=temp[1][2];
-    }
-    else if(dir==1){//서
-        dice[1][0]=temp[1][1];
-        dice[1][1]=temp[1][2];
-        dice[1][2]=temp[3][1];
-        dice[3][1]=temp[1][0];
-    }
-    else if(dir==2){//북
-        dice[0][1]=temp[1][1];
-        dice[1][1]=temp[2][1];
-        dice[2][1]=temp[3][1];
-        dice[3][1]=temp[0][1];
+void roll(int dir)
+{
+    int nx = x + dx[dir - 1];
+    int ny = y + dy[dir - 1];
 
-    }
-    else{//남
-        dice[0][1]=temp[3][1];
-        dice[1][1]=temp[0][1];
-        dice[2][1]=temp[1][1];
-        dice[3][1]=temp[2][1];
-    }
+    if (nx < 0 || ny < 0 || nx >= n || ny >= m)
+        return;
 
-    //이동한 칸이 0이면 주사위 바닥면이 칸에 복사
-    if(map_[nx][ny]==0){
-        map_[nx][ny]=dice[3][1];
+    x = nx;
+    y = ny;
+
+    int tmp[7];
+    for (int i = 0; i < 7; i++)
+        tmp[i] = dice[i];
+
+    for (int i = 0; i < 4; i++)
+        tmp[idx[dir][(i + 1) % 4]] = dice[idx[dir][i]];
+
+    for (int i = 0; i < 7; i++)
+        dice[i] = tmp[i];
+
+    // 지도가 0이면
+    if (brd[x][y] == 0)
+    {
+        brd[x][y] = dice[6];
     }
-    else{
-        dice[3][1]=map_[nx][ny];
-        map_[nx][ny]=0;
+    else
+    {
+        dice[6] = brd[x][y];
+        brd[x][y] = 0;
     }
-    cout<<dice[1][1]<<'\n';
+    cout << dice[1] << '\n';
 }
 
-int main(){
+int main()
+{
     ios::sync_with_stdio(0);
     cin.tie(0);
-    cin>>n>>m>>x>>y>>k;
-    for(int i=0;i<n;i++)
-        for(int j=0;j<m;j++)
-            cin>>map_[i][j];
-    for(int i=0;i<k;i++){
+
+    cin >> n >> m >> x >> y >> k;
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = 0; j < m; j++)
+        {
+            cin >> brd[i][j];
+        }
+    }
+
+    while (k--)
+    {
         int dir;
-        cin>>dir;
-        roll(dir,x,y);
+        cin >> dir;
+
+        roll(dir);
     }
 }
