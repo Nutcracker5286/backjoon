@@ -13,7 +13,6 @@
 
 배치가 끌날때까지 진행
 각 판의 방향 결정 후 회전
-8개의 꼭짓점 중 하나 선택해서 시작점 반대 방향에 위치한 곳이 탈출로 설정하고
 시작점을 넣고 bfs 시행, 시행후에 탈출로가 미방문이면 패스 방문했으면 최솟값 비교 후 갱신
 
 정답 출력
@@ -61,20 +60,12 @@ void roll(int num)
 }
 
 // 000,004,040,044
-void bfs(int cokidx)
+void bfs()
 {
-    auto [z, x, y] = idx[cokidx];
-    if (maze[z][x][y] == 0)
-    { // 진입 불가 시 종료
+    int z, x, y;
+    z = x = y = 0;
+    if (maze[z][x][y] == 0 || maze[4][4][4] == 0)
         return;
-    }
-    int ez = 4 - z;
-    int ex = 4 - x;
-    int ey = 4 - y;
-    if (maze[ez][ex][ey] == 0)
-    { // 탈출 불가 시 종료
-        return;
-    }
     // 방문배열 초기화
     for (int k = 0; k < 5; k++)
     {
@@ -105,9 +96,9 @@ void bfs(int cokidx)
             q.push({nz, nx, ny});
         }
     }
-    if (vis[ez][ex][ey] == 0)
+    if (vis[4][4][4] == 0)
         return;
-    ans = min(ans, vis[ez][ex][ey]);
+    ans = min(ans, vis[4][4][4]);
     isImp = 0;
 }
 
@@ -166,21 +157,7 @@ int main()
                     }
                 }
             }
-
-            // 4개의 꼭짓점 중 하나 선택
-            vector<int> cok = {0, 0, 0, 1};
-            // 000,004,040,044
-            do
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    if (cok[i])
-                    {
-                        // 탈출시에는 최단 경로 갱신도 하는 bfs 진행
-                        bfs(i);
-                    }
-                }
-            } while (next_permutation(cok.begin(), cok.end()));
+            bfs();
         }
 
     } while (next_permutation(mask.begin(), mask.end()));
