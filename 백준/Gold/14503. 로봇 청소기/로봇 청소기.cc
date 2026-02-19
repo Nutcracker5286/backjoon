@@ -1,19 +1,13 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+int n, m, r, c, d;
 int brd[55][55];
 int vis[55][55];
 
-int n, m, r, c, d;
-
-// 북동남서
+// 북동 남서
 int dx[4] = {-1, 0, 1, 0};
 int dy[4] = {0, 1, 0, -1};
-
-bool oob(int nx, int ny)
-{
-    return nx < 0 || ny < 0 || nx >= n || ny >= m;
-}
 
 int main()
 {
@@ -23,68 +17,51 @@ int main()
     cin >> n >> m >> r >> c >> d;
 
     for (int i = 0; i < n; i++)
-    {
         for (int j = 0; j < m; j++)
-        {
             cin >> brd[i][j];
-        }
-    }
 
-    int sx = r;
-    int sy = c;
+    // 게임 시작
+    int x = r;
+    int y = c;
     int ans = 0;
-    while (true)
+    while (1)
     {
-        if (!vis[sx][sy])
+        bool isNone = 0;
+        // 청소되지 않으면, 청소
+        if (!vis[x][y])
         {
-            vis[sx][sy] = 1; // 현재 칸 청소
             ans++;
+            vis[x][y] = 1;
         }
 
-        // 주변 4칸 탐색
-        bool isNone = 0;
-
+        // 사방 탐색
         for (int i = 0; i < 4; i++)
         {
-            int nx = sx + dx[i];
-            int ny = sy + dy[i];
-            if (oob(nx, ny))
-                continue;
-            if (brd[nx][ny] || vis[nx][ny])
-                continue;
-            // 청소되진 않은 빈칸이 있는 경우
-            isNone = 1;
-            break;
-        }
-
-        // 미청소, 빈칸
-        if (isNone)
-        {
-            while (1)
+            // 90도 반시계
+            d = (d + 3) % 4;
+            // 앞쪽이 청소되지 않은 빈칸이면 한 칸 전직
+            // 문제 조건에서 모서리는 벽이라고 명시함
+            if (!vis[x + dx[d]][y + dy[d]] && !brd[x + dx[d]][y + dy[d]])
             {
-                d = (d + 3) % 4; // 반시계 회전
-                int nx = sx + dx[d];
-                int ny = sy + dy[d];
-                if (oob(nx, ny))
-                    continue;
-                if (vis[nx][ny] || brd[nx][ny])
-                    continue;
-                sx = nx;
-                sy = ny;
+                x += dx[d];
+                y += dy[d];
+                isNone = 1;
                 break;
             }
         }
-        else
+        if (isNone)
         {
-            int nx = sx - dx[d];
-            int ny = sy - dy[d];
-            if (oob(nx, ny) || brd[nx][ny])
-            {
-                cout << ans;
-                return 0;
-            }
-            sx = nx;
-            sy = ny;
+            continue;
         }
+        // 청소되지 않은, 빈칸이 없는경우
+        // 후진 시 벽이면
+        if (brd[x - dx[d]][y - dy[d]])
+        {
+            cout << ans;
+            return 0;
+        }
+        // 아니면 후진
+        x -= dx[d];
+        y -= dy[d];
     }
 }
