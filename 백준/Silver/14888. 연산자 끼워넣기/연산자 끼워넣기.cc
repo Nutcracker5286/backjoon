@@ -13,6 +13,31 @@ np로 조합 구하기
 int n;
 int op[4];
 int arr[15];
+int ansm = INT_MAX, ansM = INT_MIN;
+
+void solve(int ans, int k)
+{
+    if (k == n)
+    {
+        ansm = min(ansm, ans);
+        ansM = max(ansM, ans);
+    }
+    for (int i = 0; i < 4; i++)
+    {
+        if (op[i] == 0)
+            continue;
+        op[i]--;
+        if (i == 0)
+            solve(ans + arr[k], k + 1);
+        if (i == 1)
+            solve(ans - arr[k], k + 1);
+        if (i == 2)
+            solve(ans * arr[k], k + 1);
+        if (i == 3)
+            solve(ans / arr[k], k + 1);
+        op[i]++;
+    }
+}
 
 int main()
 {
@@ -27,46 +52,7 @@ int main()
     for (int i = 0; i < 4; i++)
         cin >> op[i];
 
-    int ansm = INT_MAX, ansM = INT_MIN;
-
-    vector<int> mask; // 0, 1, 2 ,3 + - * /
-    // 연산자 별로 마스킹 백터 삽입
-    for (int i = 0; i < 4; i++)
-    {
-        for (int j = 0; j < op[i]; j++)
-        {
-            mask.push_back(i);
-        }
-    }
-
-    // 조합 시작
-    do
-    {
-        int sum = arr[0];
-
-        for (int i = 1; i < n; i++)
-        {
-            if (mask[i - 1] == 0)
-            { // 0, 덧셈
-                sum += arr[i];
-            }
-            else if (mask[i - 1] == 1)
-            { // 1, 빼기
-                sum -= arr[i];
-            }
-            else if (mask[i - 1] == 2)
-            { // 2, 곱셈
-                sum *= arr[i];
-            }
-            else
-            { // 3,나눗셈
-                 sum /= arr[i];
-            }
-        }
-        ansM = max(sum, ansM);
-        ansm = min(sum, ansm);
-
-    } while (next_permutation(mask.begin(), mask.end()));
+    solve(arr[0], 1);
     cout << ansM << '\n'
          << ansm;
 }
