@@ -60,17 +60,7 @@ int main()
             }
             else
             { // 3,나눗셈
-                // 음수를 양수로 나누는 경우
-                if (sum < 0 && arr[i] > 0)
-                {
-                    int tmp = -sum;
-                    tmp /= arr[i];
-                    sum = -tmp;
-                }
-                else
-                {
-                    sum /= arr[i];
-                }
+                 sum /= arr[i];
             }
         }
         ansM = max(sum, ansM);
