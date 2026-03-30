@@ -2,239 +2,167 @@
 using namespace std;
 
 /*
-육면을 돌려서 윗면의 색깔 출력
+tc별로 시행
+n개의 회전 명령을 받고 명령에 따라 큐브의 면을 회전 시킴
 
-tc 받고
-tc 만큼 반복 시작
-회전 횟수, 회전면, 회전 방향 받음
+tc만큼 반복
+원본큐브를 시물용 큐브로 복사하기
+n개만큼 반복
+명령 단위 한개 받기
+시계방향 회전이면 한번만 회전 아니면 3번 회전 시키기
+큐브의 윗면 출력
 
-기존 다이스 복사해서 시물용 다이스 복사
-시뮬용 다이스의 회전 수행
 */
 
-/*
-0 ,1, 2, 3,4,5
-위, 아래,북, 동 ,남, 서
-*/
-int cu[6][3][3];
-int tmp[6][3][3];
+int cube[6][3][3];
+int si[6][3][3];
 
-int tc, n, cnt;
+int n, tc;
+const int UP = 0;
+const int DOWN = 1;
+const int FRONT = 2;
+const int BACK = 3;
+const int LEFT = 4;
+const int RIGHT = 5;
 
-void rotSpace(int num)
+void rotate(int dir)
 {
-    int ts[3][3];
-    for (int i = 0; i < 3; i++)
-    {
-        for (int j = 0; j < 3; j++)
-        {
-            ts[i][j] = tmp[num][3 - 1 - j][i];
-        }
-    }
+    int tmp[3][3];
 
     for (int i = 0; i < 3; i++)
     {
         for (int j = 0; j < 3; j++)
         {
-            tmp[num][i][j] = ts[i][j];
+            tmp[i][j] = cube[dir][2 - j][i];
         }
     }
-}
-
-void rotate(char space)
-{
-    // 윗면
-    if (space == 'U')
+    for (int i = 0; i < 3; i++)
     {
-        // 면에 대한 회전 및 위아래 제외 사방의 줄 변경
-        rotSpace(0);
-        // 북 -> 동 시계방향 2,3,4,5
-        int ts[3];
-        for (int i = 0; i < 3; i++)
-            ts[i] = tmp[5][0][i];
-
-        for (int i = 5; i > 2; i--)
+        for (int j = 0; j < 3; j++)
         {
-            for (int j = 0; j < 3; j++)
-                tmp[i][0][j] = tmp[i - 1][0][j];
+            swap(tmp[i][j], cube[dir][i][j]);
         }
-        for (int i = 0; i < 3; i++)
-            tmp[2][0][i] = ts[i];
-    }
-    // 아랫면
-    else if (space == 'D')
-    {
-        // 면에 대한 회전 및 위아래 제외 사방의 줄 변경
-        rotSpace(1);
-        // 북 -> 동 시계방향 2,5,4,3
-        int ts[3];
-        for (int i = 0; i < 3; i++)
-            ts[i] = tmp[3][2][i];
-
-        // 4 -> 3
-        for (int i = 0; i < 3; i++)
-            tmp[3][2][i] = tmp[4][2][i];
-
-        // 5 ->4
-        for (int i = 0; i < 3; i++)
-            tmp[4][2][i] = tmp[5][2][i];
-        // 2 -> 5
-        for (int i = 0; i < 3; i++)
-            tmp[5][2][i] = tmp[2][2][i];
-
-        // 3 -> 2
-        for (int i = 0; i < 3; i++)
-            tmp[2][2][i] = ts[i];
-    }
-    // 앞
-    else if (space == 'F')
-    {
-        // 면에 대한 회전 및 위아래 제외 사방의 줄 변경
-        rotSpace(4);
-        // 북 -> 동 시계방향 0,3,1,5
-        int ts[3];
-        for (int i = 0; i < 3; i++)
-            ts[i] = tmp[5][i][2];
-
-        // 1 ->5
-        for (int i = 0; i < 3; i++)
-            tmp[5][i][2] = tmp[1][0][i];
-
-        // 3 ->1
-        for (int i = 0; i < 3; i++)
-            tmp[1][0][i] = tmp[3][2 - i][0];
-        // 0 ->3
-        for (int i = 0; i < 3; i++)
-            tmp[3][i][0] = tmp[0][2][i];
-
-        // 5 ->0
-        for (int i = 0; i < 3; i++)
-            tmp[0][2][i] = ts[2 - i];
-    }
-    // 뒤
-    else if (space == 'B')
-    {
-        // 면에 대한 회전 및 위아래 제외 사방의 줄 변경
-        rotSpace(2);
-        // 0,5,1,3
-        int ts[3];
-        for (int i = 0; i < 3; i++)
-            ts[i] = tmp[0][0][i];
-
-        // 3 -> 0
-        for (int i = 0; i < 3; i++)
-            tmp[0][0][i] = tmp[3][i][2];
-
-        // 1 ->3
-        for (int i = 0; i < 3; i++)
-            tmp[3][i][2] = tmp[1][2][2 - i];
-
-        // 5 -> 1
-        for (int i = 0; i < 3; i++)
-            tmp[1][2][i] = tmp[5][i][0];
-
-        // 0 -> 5
-        for (int i = 0; i < 3; i++)
-            tmp[5][i][0] = ts[2 - i];
-    }
-    // 왼
-    else if (space == 'L')
-    {
-        // 면에 대한 회전 및 위아래 제외 사방의 줄 변경
-        rotSpace(5);
-        // 0, 4,1,2
-        int ts[3];
-        for (int i = 0; i < 3; i++)
-            ts[i] = tmp[0][i][0];
-
-        //  2  -> 0
-        for (int i = 0; i < 3; i++)
-            tmp[0][i][0] = tmp[2][2 - i][2];
-
-        //  1 -> 2
-        for (int i = 0; i < 3; i++)
-            tmp[2][i][2] = tmp[1][2 - i][0];
-        //  4 -> 1
-        for (int i = 0; i < 3; i++)
-            tmp[1][i][0] = tmp[4][i][0];
-
-        // 0 -> 4
-        for (int i = 0; i < 3; i++)
-            tmp[4][i][0] = ts[i];
-    }
-
-    // 오
-
-    else if (space == 'R')
-    {
-        // 면에 대한 회전 및 위아래 제외 사방의 줄 변경
-        rotSpace(3);
-        // 0, 2,1,4
-        int ts[3];
-        for (int i = 0; i < 3; i++)
-            ts[i] = tmp[0][i][2];
-
-        //  4  -> 0
-        for (int i = 0; i < 3; i++)
-            tmp[0][i][2] = tmp[4][i][2];
-
-        //  1 -> 4
-        for (int i = 0; i < 3; i++)
-            tmp[4][i][2] = tmp[1][i][2];
-        //  2 -> 1
-        for (int i = 0; i < 3; i++)
-            tmp[1][i][2] = tmp[2][2 - i][0];
-
-        // 0 -> 2
-        for (int i = 0; i < 3; i++)
-            tmp[2][i][0] = ts[2 - i];
     }
 }
-
-vector<char> ans;
-void chkColor(int row, int col)
+void cubing(char a)
 {
-    if (tmp[0][row][col] == 0)
+    if (a == 'U')
     {
-        ans.push_back('w');
-    }
-    else if (tmp[0][row][col] == 1)
-    {
-        ans.push_back('y');
-    }
+        rotate(UP);
+        int tmp[3];
+        for (int i = 0; i < 3; i++)
+            tmp[i] = cube[LEFT][0][i];
 
-    else if (tmp[0][row][col] == 2)
-    {
-        ans.push_back('o');
+        for (int i = 0; i < 3; i++)
+            cube[LEFT][0][i] = cube[FRONT][0][i];
+        for (int i = 0; i < 3; i++)
+            cube[FRONT][0][i] = cube[RIGHT][0][i];
+        for (int i = 0; i < 3; i++)
+            cube[RIGHT][0][i] = cube[BACK][0][i];
+        for (int i = 0; i < 3; i++)
+            cube[BACK][0][i] = tmp[i];
     }
-
-    else if (tmp[0][row][col] == 3)
+    else if (a == 'D')
     {
-        ans.push_back('b');
+        rotate(DOWN);
+        int tmp[3];
+        for (int i = 0; i < 3; i++)
+            tmp[i] = cube[RIGHT][2][i];
+
+        for (int i = 0; i < 3; i++)
+            cube[RIGHT][2][i] = cube[FRONT][2][i];
+        for (int i = 0; i < 3; i++)
+            cube[FRONT][2][i] = cube[LEFT][2][i];
+        for (int i = 0; i < 3; i++)
+            cube[LEFT][2][i] = cube[BACK][2][i];
+        for (int i = 0; i < 3; i++)
+            cube[BACK][2][i] = tmp[i];
     }
-
-    else if (tmp[0][row][col] == 4)
+    else if (a == 'F')
     {
-        ans.push_back('r');
+        rotate(FRONT);
+        int tmp[3];
+        for (int i = 0; i < 3; i++)
+            tmp[i] = cube[LEFT][i][2];
+
+        for (int i = 0; i < 3; i++)
+            cube[LEFT][i][2] = cube[DOWN][0][i];
+        for (int i = 0; i < 3; i++)
+            cube[DOWN][0][i] = cube[RIGHT][2 - i][0];
+        for (int i = 0; i < 3; i++)
+            cube[RIGHT][i][0] = cube[UP][2][i];
+        for (int i = 0; i < 3; i++)
+            cube[UP][2][i] = tmp[2 - i];
     }
-
-    else if (tmp[0][row][col] == 5)
+    else if (a == 'B')
     {
-        ans.push_back('g');
+        rotate(BACK);
+        int tmp[3];
+        for (int i = 0; i < 3; i++)
+            tmp[i] = cube[RIGHT][i][2];
+
+        for (int i = 0; i < 3; i++)
+            cube[RIGHT][i][2] = cube[DOWN][2][2 - i];
+        for (int i = 0; i < 3; i++)
+            cube[DOWN][2][i] = cube[LEFT][i][0];
+        for (int i = 0; i < 3; i++)
+            cube[LEFT][i][0] = cube[UP][0][2 - i];
+        for (int i = 0; i < 3; i++)
+            cube[UP][0][i] = tmp[i];
+    }
+    else if (a == 'L')
+    {
+        rotate(LEFT);
+        int tmp[3];
+        for (int i = 0; i < 3; i++)
+            tmp[i] = cube[BACK][i][2];
+
+        for (int i = 0; i < 3; i++)
+            cube[BACK][i][2] = cube[DOWN][2 - i][0];
+        for (int i = 0; i < 3; i++)
+            cube[DOWN][i][0] = cube[FRONT][i][0];
+        for (int i = 0; i < 3; i++)
+            cube[FRONT][i][0] = cube[UP][i][0];
+        for (int i = 0; i < 3; i++)
+            cube[UP][i][0] = tmp[2 - i];
+    }
+    else if (a == 'R')
+    {
+        rotate(RIGHT);
+        int tmp[3];
+        for (int i = 0; i < 3; i++)
+            tmp[i] = cube[FRONT][i][2];
+
+        for (int i = 0; i < 3; i++)
+            cube[FRONT][i][2] = cube[DOWN][i][2];
+        for (int i = 0; i < 3; i++)
+            cube[DOWN][i][2] = cube[BACK][2 - i][0];
+        for (int i = 0; i < 3; i++)
+            cube[BACK][i][0] = cube[UP][2 - i][2];
+        for (int i = 0; i < 3; i++)
+            cube[UP][i][2] = tmp[i];
     }
 }
-
-void print_color()
+// w, y, r, o, g, b
+void print_up()
 {
     for (int i = 0; i < 3; i++)
     {
-        ans.clear();
         for (int j = 0; j < 3; j++)
         {
-            chkColor(i, j);
+            if (cube[UP][i][j] == 0)
+                cout << 'w';
+            else if (cube[UP][i][j] == 1)
+                cout << 'y';
+            else if (cube[UP][i][j] == 2)
+                cout << 'r';
+            else if (cube[UP][i][j] == 3)
+                cout << 'o';
+            else if (cube[UP][i][j] == 4)
+                cout << 'g';
+            else
+                cout << 'b';
         }
-        for (auto c : ans)
-            cout << c;
         cout << '\n';
     }
 }
@@ -244,54 +172,49 @@ int main()
     ios::sync_with_stdio(0);
     cin.tie(0);
 
+    // 원본 큐브 색칠
     for (int i = 0; i < 6; i++)
     {
         for (int j = 0; j < 3; j++)
         {
             for (int k = 0; k < 3; k++)
-            {
-                cu[i][j][k] = i;
-            }
+                cube[i][j][k] = i;
         }
     }
 
     cin >> tc;
 
-    // tc 시작
     while (tc--)
     {
-        // 회전 명령 횟수 시작
         cin >> n;
 
-        // 기존 다이스 복사
+        // 시뮬 큐브 초기화
         for (int i = 0; i < 6; i++)
         {
             for (int j = 0; j < 3; j++)
             {
                 for (int k = 0; k < 3; k++)
-                {
-                    tmp[i][j][k] = cu[i][j][k];
-                }
+                    cube[i][j][k] = i;
             }
         }
 
         while (n--)
-        { // 방향 ,횟수 삽입
+        { // n개의 명령 시행
             char a, b;
             cin >> a >> b;
 
-            // 다이스 회전
             if (b == '+')
-            {
-                rotate(a);
+            { // 시계방향
+                cubing(a);
             }
             else
-            {
+            { // 반시계는 3번반복
                 for (int i = 0; i < 3; i++)
-                    rotate(a);
+                    cubing(a);
             }
         }
-        // 윗면의 색상 출력
-        print_color();
+
+        // 큐브 윗면 출력
+        print_up();
     }
 }
