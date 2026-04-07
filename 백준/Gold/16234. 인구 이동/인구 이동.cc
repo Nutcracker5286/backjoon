@@ -88,12 +88,8 @@ int main()
 
         // 연합 표시된곳을 연합 인구수로 조정
         ismove = 0;
-        for (int i = 1; i <= num; i++)
+        for (int i = 1; i < num; i++)
         {
-            if (con[i].empty())
-            {
-                break;
-            }
             int score = psum[i] / con[i].size();
             for (auto [x, y] : con[i])
             {
