@@ -1,14 +1,15 @@
--- 코드를 작성해주세요
 /*
-ntile 함수 , over 윈도우 함수
+크기 기준 내림차순 정렬시 상위 25퍼가지 크리티컬, 50퍼, 75퍼, 100퍼
+4개로 쪼개서 출력
 */
-select id, 
-case
-    when per = 1 then 'CRITICAL'
-    when per =2 then 'HIGH'
-    when per =3 then 'MEDIUM'
-    else 'LOW'
-    end as colony_name
-from (select id, ntile(4) over(order by size_of_colony desc) as per
-     from ecoli_data) as sub
-     order by id 
+
+SELECT ID,
+CASE
+WHEN PER =1 THEN 'CRITICAL'
+WHEN PER =2 THEN 'HIGH'
+WHEN PER =3 THEN 'MEDIUM'
+ELSE 'LOW'
+END AS COLONY_NAME
+FROM (SELECT ID, NTILE(4) OVER(ORDER BY SIZE_OF_COLONY DESC) AS PER
+      FROM ECOLI_DATA) AS E
+ORDER BY ID
