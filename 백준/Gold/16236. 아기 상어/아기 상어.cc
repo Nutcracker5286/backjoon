@@ -18,30 +18,34 @@ using namespace std;
 고기 리스트에 추가
 
 게임 시작
-현재 상어와 리스트에 있는, 먹을 수 있는  고기와의 거리 계산 및 1순위 선정
-해당 물고기 없다면 게임 종료
-이동과 동시에 섭취,이동 칸수 만큼 초 초과
+1순위 먹이 선정
+먹이가 없다면 게임 종료
+섭취 후 사이즈 갱신
 */
 int brd[25][25];
 vector<pair<int, int>> f;
-int dx[4] = {1, 0, -1, 0};
-int dy[4] = {0, 1, 0, -1};
+int dx[4] = {-1, 0, 1, 0}; // 위 왼
+int dy[4] = {0, -1, 0, 1};
 int n, sx, sy, cnt, sz;
+int vis[25][25];
 
-// 상어와 해당 좌표의 물고기와의 거리 계산
-int calc(int tx, int ty)
+// 1순위 먹이 반납 ,거리 기준, x작은 기준, y 작은 기준
+//  거리, 좌표
+tuple<int, int, int> findFish()
 {
-    int vis[25][25];
     fill(&vis[0][0], &vis[0][0] + 625, -1);
-
     queue<pair<int, int>> q;
-    vis[sx][sy] = 0;
+    tuple<int, int, int> st = {INT_MAX, INT_MAX, INT_MAX};
     q.push({sx, sy});
+    vis[sx][sy] = 0;
 
     while (!q.empty())
     {
         auto [x, y] = q.front();
         q.pop();
+
+        if (vis[x][y] >= get<0>(st))
+            break;
         for (int d = 0; d < 4; d++)
         {
             int nx = x + dx[d], ny = y + dy[d];
@@ -51,15 +55,16 @@ int calc(int tx, int ty)
                 continue;
             if (brd[nx][ny] > sz)
                 continue;
-            if (nx == tx && ny == ty)
-            {
-                return vis[x][y] + 1;
+            if (brd[nx][ny] != 0 && brd[nx][ny] < sz)
+            { // 먹이 가능 후보 발견시 갱신
+                st = min(st, {vis[x][y] + 1, nx, ny});
             }
             vis[nx][ny] = vis[x][y] + 1;
             q.push({nx, ny});
         }
     }
-    return -1;
+
+    return st;
 }
 
 int main()
@@ -79,9 +84,8 @@ int main()
                 sx = i;
                 sy = j;
                 sz = 2;
+                brd[i][j] = 0;
             }
-            else if (brd[i][j] != 0)
-                f.push_back({i, j});
         }
     }
 
@@ -89,62 +93,24 @@ int main()
     int ans = 0;
     while (1)
     {
-        // 현재 상어의 위치 토대로 1순위 먹이 선정
-        deque<tuple<int, int, int>> rank; // 순위, 좌표
-        for (auto [x, y] : f)
-        {
-            if (brd[x][y] >= sz || brd[x][y] == 0)
-                continue; // 먹이 제외
-            int dist = calc(x, y);
-            if (dist == -1)
-                continue;
-            if (rank.empty())
-            {
-                rank.push_front({dist, x, y});
-                continue;
-            }
-
-            auto [a, b, c] = rank.front();
-            // 거리 계산 후 랭크앞에 있는 값보다 작으면 앞에
-            if (dist < a)
-                rank.push_front({dist, x, y});
-            else if (dist == a)
-            {
-                // 더 위에 있다면 물고기 삽입
-                if (b > x)
-                {
-                    rank.push_front({dist, x, y});
-                }
-                // 이것도 같다면 더 왼쪽 물고기 삽입
-                else if (b == x)
-                {
-                    if (c > y)
-                    {
-                        rank.push_front({dist, x, y});
-                    }
-                }
-            }
-        }
-
+        // 1순위 먹이 선정
+        auto [d, x, y] = findFish();
         // 먹이가 없다면 종료
-        if (rank.empty())
+        if (d == INT_MAX)
         {
             cout << ans;
             return 0;
         }
 
-        // 이동 및 시간 계산 , 사이즈 및 횟수 갱신
-        auto [d, x, y] = rank.front();
-        brd[sx][sy] = 0;
-        ans += d;
-        sx = x;
-        sy = y;
         brd[x][y] = 0;
+        sx = x, sy = y;
+        ans += d;
         cnt++;
+        // 있다면 사이즈 갱신
         if (cnt == sz)
         {
-            sz++;
             cnt = 0;
+            sz++;
         }
     }
     cout << ans;
