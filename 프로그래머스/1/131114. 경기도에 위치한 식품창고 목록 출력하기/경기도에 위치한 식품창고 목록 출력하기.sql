@@ -1,0 +1,9 @@
+/*
+창고 야이디, 이름, 주소, 냉동시설 여부, 시설여부 null이면 n으로 출력
+id 기준 오름차순
+*/
+SELECT WAREHOUSE_ID, WAREHOUSE_NAME, ADDRESS,
+IFNULL(FREEZER_YN,'N') 
+FROM FOOD_WAREHOUSE
+WHERE ADDRESS LIKE '경기도%'
+ORDER BY WAREHOUSE_ID
