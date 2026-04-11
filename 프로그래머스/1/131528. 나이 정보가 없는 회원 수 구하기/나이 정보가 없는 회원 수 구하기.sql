@@ -1,0 +1,6 @@
+/*
+나이가 null인 회원 카운트 컬럼명은 users
+*/
+SELECT COUNT(USER_ID) AS USERS
+FROM USER_INFO
+WHERE AGE IS NULL
