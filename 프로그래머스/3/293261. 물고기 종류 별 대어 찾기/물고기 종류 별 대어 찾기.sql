@@ -1,0 +1,17 @@
+/*
+종류별로 가장 큰 물고기의 id, name , length
+출력
+id 오름차순
+
+종류별로 가장 큰 물고기 표 필요, 타입별 이름 필요
+*/
+
+SELECT F.ID, I.FISH_NAME, F.LENGTH
+FROM FISH_INFO F
+JOIN FISH_NAME_INFO I
+ON F.FISH_TYPE = I.FISH_TYPE
+WHERE F.LENGTH  = 
+(SELECT  MAX(F2.LENGTH) 
+ FROM FISH_INFO F2 
+ WHERE F2.FISH_TYPE = F.FISH_TYPE)
+ORDER BY F.ID
