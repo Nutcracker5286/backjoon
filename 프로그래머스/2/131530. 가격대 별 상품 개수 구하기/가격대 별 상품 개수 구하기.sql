@@ -1,0 +1,9 @@
+/*
+만원 단위 가격대 별로 상품 개수 출력
+컬럼명 변경, 최소금액 표시, 가격대 기준 오릋마순 
+*/
+SELECT (PRICE DIV 10000) * 10000 AS PRICE_GROUP,
+COUNT(*) AS PRODUCTS
+FROM PRODUCT
+GROUP BY PRICE DIV 10000
+ORDER BY PRICE DIV 10000
