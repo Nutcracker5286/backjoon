@@ -1,0 +1,11 @@
+/*
+노선별로 노선, 총 누계 거리, 평균 역 사이 거리 조회
+총 누계 거리 = 역들의 역 사이 거리 총합
+컬럼명 변겅, 둘째 , 셋째 반올림
+총누 기준 내림차순
+*/
+SELECT ROUTE,  CONCAT(ROUND(SUM(D_BETWEEN_DIST),1),'km') AS TOTAL_DISTANCE, 
+CONCAT(ROUND(AVG(D_BETWEEN_DIST),2),'km' ) AS AVERAGE_DISTANCE
+FROM SUBWAY_DISTANCE
+GROUP BY ROUTE
+ORDER BY SUM(D_BETWEEN_DIST) DESC
