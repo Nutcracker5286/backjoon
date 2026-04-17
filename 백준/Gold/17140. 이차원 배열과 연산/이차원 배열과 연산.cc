@@ -1,132 +1,61 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define X first
+#define Y second
 
-/*
-a[r][c] 가 k가 되는 시간 구하기
-100초 이상이면 -1 출력
+int brd[105][105];
+int r, c, k, rs = 3, cs = 3;
 
-1초마다
-r연산 => 모든행 단위 정렬 , 행의 개수 >= 열의 개수인 경우만, 행 늘어나면 모든 행 크기 증가
-c연산 => 모든열 단위 정렬 , 행의 개수 < 열의 개수, 열 늘어나면 모든 열 크기 증가
-가장 큰 행 , 열 기준으로 크기 증가시 0으로 채워짐
-
-연산 후에는
-정렬 방식
-    정렬시 0은 무시
-    수의 등장횟수, 수의 크기 오름차순
-    정렬된 결과를 다시 넣어야 함
-
-입력 받기
-
-게임 시작
-조건에 따라 행 또는 열 연산 시행
-    연산 시행시 사본 벡터로 진행
-정렬 결과 배열에 삽입
-    배열 즉시 교체
-행 또는 열 크기 조정
-    나머지 배열의 크기 늘리기
-크기가 100을 넘어가면 100을 넘어가는 나머지 제외
-*/
-
-int brd[1000][1000];
-int r, c, k, rowSize = 3, colSize = 3;
+// 전치 함수
+void trs()
+{
+    int mx = max(rs, cs);
+    for (int i = 1; i <= mx; i++)
+    {
+        for (int j = i + 1; j <= mx; j++)
+        {
+            swap(brd[i][j], brd[j][i]);
+        }
+    }
+    swap(rs, cs);
+}
 
 // r연산 시행
 void R()
 {
-    int tmp[101][101] = {0};
-    int mxSize = 0;
-
-    // 행별로 시행
-    for (int i = 0; i < rowSize; i++)
+    int mx = 0;
+    for (int i = 1; i <= rs; i++)
     {
-        pair<int, int> num[101] = {}; // 등장횟수, 수의 크기
+        int fr[105] = {};
+        vector<pair<int, int>> v; // 횟수, 크기
 
-        // 정렬를 위한 배열 정리
-        for (int j = 0; j < colSize; j++)
+        for (int j = 1; j <= cs; j++)
         {
-            num[brd[i][j]].first++;            // 등장횟수 증가
-            num[brd[i][j]].second = brd[i][j]; // 수의 크기 삽입
+            fr[brd[i][j]]++;
         }
-
-        sort(num, num + 101); // 횟수, 크기별로 정렬 시행
-
-        // 100까지만 정렬 결과 삽입 및 사이즈 갱신
-        int idx = 0;
-        for (int j = 0; j < 101; j++)
-        {
-            // 정렬 시 0은 무시, 등장하지 않은것도 무시
-            if (num[j].second == 0 || num[j].first == 0)
-                continue;
-            if (idx + 2 > 100)
-                break; // 100개 이상이면 종료
-            // 삽입은 크기, 횟수
-            tmp[i][idx++] = num[j].second;
-            tmp[i][idx++] = num[j].first;
+        for (int j = 1; j <= 101; j++)
+        { // 0은 제외
+            if (fr[j] == 0)
+                continue; // 등장한 수만 고려
+            v.push_back({fr[j], j});
         }
-        mxSize = max(mxSize, idx);
-    }
+        sort(v.begin(), v.end()); // 정렬
 
-    colSize = mxSize;
-    // 원본 부착 및 사이즈 조절
-    for (int i = 0; i < rowSize; i++)
-    {
-        for (int j = 0; j < colSize; j++)
+        // 배열 삽입
+        int idx = 1;
+        for (auto c : v)
         {
-            if (j >= 100)
+            if (idx > 100)
                 break;
-            brd[i][j] = tmp[i][j];
+            brd[i][idx++] = c.Y;
+            brd[i][idx++] = c.X;
         }
+        mx = max(mx, idx-1);
+
+        // 0으로 패딩
+        fill(brd[i] + idx, brd[i] + 105, 0);
     }
-}
-
-// c연산 시행
-void C()
-{
-    int tmp[101][101] = {0};
-    int mxSize = 0;
-
-    // 열별로 시행
-    for (int i = 0; i < colSize; i++)
-    {
-        pair<int, int> num[101] = {}; // 등장횟수, 수의 크기
-
-        // 정렬를 위한 배열 정리
-        for (int j = 0; j < rowSize; j++)
-        {
-            num[brd[j][i]].first++;            // 등장횟수 증가
-            num[brd[j][i]].second = brd[j][i]; // 수의 크기 삽입
-        }
-
-        sort(num, num + 101); // 횟수, 크기별로 정렬 시행
-
-        // 100까지만 정렬 결과 삽입 및 사이즈 갱신
-        int idx = 0;
-        for (int j = 0; j < 101; j++)
-        {
-            // 정렬 시 0은 무시, 등장하지 않은것도 무시
-            if (num[j].second == 0 || num[j].first == 0)
-                continue;
-            if (idx + 2 > 100)
-                break; // 100개 이상이면 종료
-            // 삽입은 크기, 횟수
-            tmp[idx++][i] = num[j].second;
-            tmp[idx++][i] = num[j].first;
-        }
-        mxSize = max(mxSize, idx);
-    }
-
-    rowSize = mxSize;
-    // 원본 부착 및 사이즈 조절
-    for (int i = 0; i < colSize; i++)
-    {
-        for (int j = 0; j < rowSize; j++)
-        {
-            if (j >= 100)
-                break;
-            brd[j][i] = tmp[j][i];
-        }
-    }
+    cs = mx;
 }
 
 int main()
@@ -136,30 +65,27 @@ int main()
 
     cin >> r >> c >> k;
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 1; i < 4; i++)
     {
-        for (int j = 0; j < 3; j++)
-        {
+        for (int j = 1; j < 4; j++)
             cin >> brd[i][j];
-        }
     }
 
-    // 100초 시뮬레이션
-    for (int ans = 0; ans <= 100; ans++)
+    // 100초가 넘어가거나 목표 조건 달성 시 종료
+    int ans = 0;
+    while (brd[r][c] != k && ans <= 100)
     {
-        if (brd[r - 1][c - 1] == k)
-        {
-            cout << ans;
-            return 0;
+        // 행열 사이즈 비교 후 전치
+        bool isTr = 0;
+        if (rs < cs)
+        { // 열연산 진행 해야 하는경우 따라서 전치
+            isTr = 1;
+            trs();
         }
-
-        if (ans == 100)
-            break;
-
-        if (rowSize >= colSize)
-            R();
-        else
-            C();
+        R();
+        if (isTr)
+            trs();
+        ans++;
     }
-    cout << -1;
+    cout << (ans > 100 ? -1 : ans);
 }
