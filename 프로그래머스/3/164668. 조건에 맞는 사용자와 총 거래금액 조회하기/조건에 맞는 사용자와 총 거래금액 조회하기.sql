@@ -1,0 +1,16 @@
+/*
+거래가 완료되었고, 거래 총금액이 70만원 이상인
+id, 닉네임, 총거래금 조회
+총거래금 기준 오름차순 
+
+유저별로 ,완료된, 거래 기준 총금액이 70만원 이상인, id, 금액 테이블 생성
+정보 출력
+*/
+SELECT U.USER_ID, U.NICKNAME, SUM(B.PRICE) AS TOTAL_SALES
+FROM USED_GOODS_USER U
+JOIN USED_GOODS_BOARD B
+ON U.USER_ID = B.WRITER_ID
+WHERE B.STATUS = 'DONE'
+GROUP BY U.USER_ID, U.NICKNAME
+HAVING SUM(B.PRICE) >= 700000
+ORDER BY TOTAL_SALES ASC
