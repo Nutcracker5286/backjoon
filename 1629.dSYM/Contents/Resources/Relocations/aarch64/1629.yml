@@ -1,0 +1,10 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/ihojun/Desktop/backjoon/1629'
+relocations:
+  - { offset: 0x1603A, size: 0x8, addend: 0x0, symName: __ZStL8__ioinit, symObjAddr: 0x61620, symBinAddr: 0x100008000, symSize: 0x0 }
+  - { offset: 0x16261, size: 0x8, addend: 0x0, symName: __GLOBAL__sub_I_1629.cpp, symObjAddr: 0x180, symBinAddr: 0x1000007D0, symSize: 0x14 }
+  - { offset: 0x16278, size: 0x8, addend: 0x0, symName: __Z41__static_initialization_and_destruction_0v, symObjAddr: 0x144, symBinAddr: 0x100000794, symSize: 0x3C }
+  - { offset: 0x16296, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0xAC, symBinAddr: 0x1000006FC, symSize: 0x98 }
+  - { offset: 0x162E6, size: 0x8, addend: 0x0, symName: __Z3powxxx, symObjAddr: 0x0, symBinAddr: 0x100000650, symSize: 0xAC }
+...
