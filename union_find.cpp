@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+<<<<<<< HEAD
 
 using namespace std;
 
@@ -50,4 +51,3 @@ bool uni(int u, v){
     if(u ==v) 
     return false;
     if(p[v] < p[u]) // 
-}

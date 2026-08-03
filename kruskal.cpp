@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+<<<<<<< HEAD
 
 using namespace std;
 
@@ -46,4 +47,3 @@ void kruskal(){
     }
 
     
-}
