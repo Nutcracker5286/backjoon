@@ -1,42 +1,49 @@
 #include <bits/stdc++.h>
+
 using namespace std;
 
+
 vector<int> adj[200];
-int deg[200];
-int n;
+int indeg[200];
 
-bool tSort()
-{
-    vector<int> res;
+/*
+indeg가 0인 노드 큐에 삽입
+큐에서 꺼내서 정렬 결과 벡터에 삽입
+꺼낸 노드와 연결된 모든 정점 탐색
+    ind--
+    만약 indeg가 0이면 큐에 넣기
+
+정답 벡터 사이즈가 n이 아니면
+    사이클이 형성된것
+정답 벡터 리턴
+*/
+
+int v,e;
+void TopoSort(){
+
     queue<int> q;
+    vector<int> res;
 
-    // 들어오는 간선 0인 노드 추가
-    for (int i = 0; i < n; i++)
-    {
-        if (deg[i] == 0)
-            q.push(i);
+
+    for(int i=0; i<v; i++){
+        if(indeg[i]==0) q.push(i);
     }
 
-    while (!q.empty())
-    {
-        auto cur = q.front();
-        q.pop();
 
-        // 큐에서 꺼낸 것이 현재 정렬 순서
+    while(!q.empty()){
+        int cur = q.front(); q.pop();
         res.push_back(cur);
 
-        for (int nxt : adj[cur])
-        {
-            deg[nxt]--;
-            if (deg[nxt] == 0)
-                q.push(cur);
+        for(int nxt :  adj[cur]){
+            indeg[nxt]--;
+            if(indeg[nxt]==0) q.push(nxt);
         }
     }
 
-    if (res.size() != n)
-    { // 사이클이 형성되어 정렬이 실패한 경우
-        cout << "cycle exists";
-        return false;
+    if(res.size()!= v){
+        cout<<"cycle exists\n";
+        return ;
     }
-    return true; // 정렬 성공
+    
+    cout<< "cpt topoSort";
 }
