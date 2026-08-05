@@ -5,41 +5,25 @@ using namespace std;
 
 
 /*
-처음에는 문자, 처음으로 숫자 만나면 지금까지 문자열을 저장
-숫자는 다음으로 문자를 만나면 종료
+숫자 만날때까지 문자 저장
+문자이후에는 끝에 도달하거나 숫자가 아니면 숫자에 저장 및 갱신
+
 */
 vector<string> split(string &s,int t){
-    vector<string> res;
-
-    string cur ="",num="";
+    vector<string> res(3);
+    int i=0, n= s.size();
     
-    // . 기준 전처리
-    int pos = s.find('.');
-    bool fir=0;
-    for(int i=0; i<s.size(); i++){
-        bool isN = isdigit(s[i]);
-        if(!fir && !isN){ //초기이고 숫자가 아니면
-            cur+=tolower(s[i]);
-        }
-        else if(!fir && isN){ //문자만 컬렉하다가 숫자 만나는 경우
-            res.push_back(cur);
-            fir = 1;
-            num+=s[i];
-        }
-        else if(fir && isN ){ //초기처리 됬고 숫자만 만나는
-            num+=s[i];
-        }
-        else if(fir && !isN){ //초기처리 됐고, 숫자가 아니면
-            res.push_back(num);                
-            res.push_back(to_string(t));
-            return res;
-        }
+    string head ="", num ="";
+    
+    while(i<n && !isdigit(s[i])) head+=tolower(s[i++]);
+    
+    //숫자가 시작되는 지점
+    int ncnt =1;
+    while(i<n && isdigit(s[i]) && ncnt<=5){
+        num+=s[i++];
+        ncnt++;
     }
-   
-        res.push_back(num);                
-            res.push_back(to_string(t));
-    
-        
+            res[0]= head; res[1] = num; res[2]=to_string(t);
     return res;
 }
 
