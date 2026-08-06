@@ -1,0 +1,109 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+using ll = long long;
+
+int p[1005];
+
+int find(int x)
+{
+    if (p[x] < 0)
+        return x;
+
+    return p[x] = find(p[x]);
+}
+
+bool uni(int u, int v)
+{
+    u = find(u);
+    v = find(v);
+
+    if (u == v)
+        return false;
+
+    // p 값이 더 작은 쪽이 랭크가 더 높음
+    if (p[v] < p[u])
+        swap(u, v);
+
+    if (p[u] == p[v])
+        p[u]--;
+
+    p[v] = u;
+
+    return true;
+}
+
+int main()
+{
+    ios::sync_with_stdio(0);
+    cin.tie(0);
+
+    int T;
+    cin >> T;
+
+    for (int testCase = 1; testCase <= T; testCase++)
+    {
+        /////////////////////////////////////////////////////////////////////////////////////////////
+        /*
+             이 부분에 여러분의 알고리즘 구현이 들어갑니다.
+             간선비용이 =  E * L^2
+             연결시마다 전체 비용을 계산해야 하므로 mst
+         */
+        /////////////////////////////////////////////////////////////////////////////////////////////
+
+        int n;
+        cin >> n;
+
+        fill(p, p + n, -1);
+
+        vector<ll> x(n);
+        vector<ll> y(n);
+
+        for (int i = 0; i < n; i++)
+            cin >> x[i];
+
+        for (int i = 0; i < n; i++)
+            cin >> y[i];
+
+        double e;
+        cin >> e;
+
+        // {거리 제곱, 섬 번호 1, 섬 번호 2}
+        vector<tuple<ll, int, int>> edges;
+
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = i + 1; j < n; j++)
+            {
+                ll dx = x[i] - x[j];
+                ll dy = y[i] - y[j];
+
+                ll dist = dx * dx + dy * dy; // 소수점 곱하면 짤리기 때문에 마지막에 보정 진행
+
+                edges.push_back({dist, i, j});
+            }
+        }
+
+        sort(edges.begin(), edges.end());
+
+        ll totalDist = 0;
+        int selected = 0;
+
+        for (auto [dist, u, v] : edges)
+        {
+            if (!uni(u, v))
+                continue;
+
+            totalDist += dist;
+            selected++;
+
+            if (selected == n - 1)
+                break;
+        }
+
+        cout << '#' << testCase << ' '
+             << llround(totalDist * e) << '\n';
+    }
+
+    return 0;
+}
