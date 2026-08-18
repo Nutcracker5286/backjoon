@@ -1,34 +1,32 @@
 #include <string>
-#include <bits/stdc++.h>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 /*
-총 차량 개수에서 범위 겹치는 차량 찾기
-- 겹치는 횟수+1을 정답에
+백준의 회의실 배정과 동일한 문제
+현재시점이후 기준, 진입시점이 현재 이후이고, 가장 빨리 끝나는 카메라를 선택
 */
 int solution(vector<vector<int>> routes) {
-     // 진출 지점 기준 오름차순
-    sort(routes.begin(), routes.end(),
-         [](const vector<int>& a, const vector<int>& b) {
-             return a[1] < b[1];
-         });
-
     int answer = 0;
-
-    // 아직 카메라 없음
-    int camera = -30001;
-
-    for (auto& route : routes) {
-        int start = route[0];
-        int end = route[1];
-
-        // 현재 카메라가 이 차량의 진입 지점보다 앞에 있으면
-        // 이 차량은 기존 카메라를 만나지 못함
-        if (camera < start) {
-            camera = end;
-            answer++;
-        }
+    int cam  = -0x7f7f7f7f;
+    
+    sort(routes.begin(),routes.end(),[](auto a, auto b){
+        if(a[1] == b[1])
+            return a[0]<b[0];
+        return a[1] < b[1];
+    });
+    
+    
+    for(auto r : routes){
+        if(r[0] <= cam) continue;
+        
+        answer++;
+        cam = r[1];
     }
+        
+        
+    
     
     return answer;
 }
